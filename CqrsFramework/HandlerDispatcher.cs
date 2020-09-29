@@ -17,17 +17,16 @@ namespace CqrsFramework
 
         public Task<TResponse> SendAsync<TResponse>(IRequest<TResponse> request)
         {
-            var handlerType = typeof(IRequestHandler<,>).MakeGenericType(request.GetType(), typeof(TResponse));
-            var handler = _serviceProvider.GetRequiredService(handlerType);
             var method = GetType().GetMethod(nameof(Handle), BindingFlags.Instance | BindingFlags.NonPublic).MakeGenericMethod(request.GetType(), typeof(TResponse));
-            var task = method.Invoke(this, new object[] {handler, request});
+            var task = method.Invoke(this, new object[] {request});
             
             return (Task<TResponse>)task;
         }
 
-        private Task<TResponse> Handle<TRequest, TResponse>(IRequestHandler<TRequest, TResponse> handler, TRequest request)
+        private Task<TResponse> Handle<TRequest, TResponse>(TRequest request)
             where TRequest : IRequest<TResponse>
         {
+            var handler = _serviceProvider.GetRequiredService<IRequestHandler<TRequest, TResponse>>();
             var middlewares = _serviceProvider.GetServices<IMiddleware<TRequest, TResponse>>();
             HandlerDelegate<TResponse> handlerDelegate = () => handler.HandleAsync(request);
             var resultDelegate = middlewares.Aggregate(handlerDelegate, (next, middleware) => () => middleware.HandleAsync(request, next));

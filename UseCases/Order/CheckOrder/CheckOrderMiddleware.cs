@@ -7,7 +7,7 @@ using WebApi.Order.CheckOrder;
 namespace UseCases.Order.CheckOrder
 {
     public class CheckOrderMiddleware<TRequest, TResponse> : IMiddleware<TRequest, TResponse>
-        where TRequest : ICheckOrderRequest
+        where TRequest : IRequest<TResponse>, ICheckOrderRequest
     {
         private readonly IDbContext _dbContext;
         private readonly ICurrentUserService _currentUserService;

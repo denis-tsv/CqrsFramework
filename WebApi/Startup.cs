@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Net.Security;
 using System.Reflection;
 using AutoMapper;
 using CqrsFramework;
@@ -38,8 +39,6 @@ namespace WebApi
 
             services.AddAutoMapper(typeof(OrderMappingProfile));
 
-            //services.AddScoped<IRequestHandler<GetOrderRequest, OrderDto>, GetOrderRequestHandler>();
-            //services.AddScoped<IRequestHandler<UpdateOrderRequest, Unit>, UpdateOrderRequestHandler>();
             services.Scan(selector => selector.FromAssemblyOf<GetOrderRequest>()
                 .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
                 .AsImplementedInterfaces()
@@ -47,8 +46,10 @@ namespace WebApi
             );
 
             services.AddScoped(typeof(CheckOrderRequestDecorator<,>));
-            services.Decorate<IRequestHandler<GetOrderRequest, OrderDto>, CheckOrderRequestDecorator<GetOrderRequest, OrderDto>>();
-            services.Decorate<IRequestHandler<UpdateOrderRequest, Unit>, CheckOrderRequestDecorator<UpdateOrderRequest, Unit>>();
+            //services.Decorate<IRequestHandler<GetOrderRequest, OrderDto>, CheckOrderRequestDecorator<GetOrderRequest, OrderDto>>();
+            //services.Decorate<IRequestHandler<UpdateOrderRequest, Unit>, CheckOrderRequestDecorator<UpdateOrderRequest, Unit>>();
+
+            services.AddScoped(typeof(IMiddleware<,>), typeof(CheckOrderMiddleware<,>));
 
             services.AddScoped<IHandlerDispatcher, HandlerDispatcher>();
         }

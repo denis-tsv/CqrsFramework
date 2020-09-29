@@ -12,23 +12,23 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IHandlerFactory _handlerFactory;
 
-        public OrderController(IServiceProvider serviceProvider)
+        public OrderController(IHandlerFactory handlerFactory)
         {
-            _serviceProvider = serviceProvider;
+            _handlerFactory = handlerFactory;
         }
 
         [HttpGet("{id}")]
         public Task<OrderDto> Get(int id)
         {
-            return _serviceProvider.GetRequiredService<IRequestHandler<int, OrderDto>>().HandleAsync(id);
+            return _handlerFactory.CreateHandler<int, OrderDto>().HandleAsync(id);
         }
 
         [HttpPost("{id}")]
         public Task Update(int id, [FromBody]OrderDto dto)
         {
-            return _serviceProvider.GetRequiredService<IRequestHandler<UpdateOrderRequest>>().HandleAsync(new UpdateOrderRequest {Id = id, Dto = dto});
+            return _handlerFactory.CreateHandler<UpdateOrderRequest>().HandleAsync(new UpdateOrderRequest {Id = id, Dto = dto});
         }
     }
 }

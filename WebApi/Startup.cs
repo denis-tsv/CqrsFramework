@@ -36,6 +36,8 @@ namespace WebApi
 
             services.AddScoped<IRequestHandler<int, OrderDto>, GetOrderRequestHandler>();
             services.AddScoped<IRequestHandler<UpdateOrderRequest>, UpdateOrderRequestHandler>();
+
+            services.AddScoped<IHandlerFactory, HandlerFactory>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

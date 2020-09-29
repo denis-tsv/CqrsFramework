@@ -11,19 +11,15 @@ namespace UseCases.Order
     {
         private readonly IDbContext _dbContext;
         private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
 
-        public GetOrderRequestHandler(IDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService)
+        public GetOrderRequestHandler(IDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
             _mapper = mapper;
-            _currentUserService = currentUserService;
         }
         public async Task<OrderDto> HandleAsync(GetOrderRequest request)
         {
             var order = await _dbContext.Orders.FindAsync(request.Id);
-            if (order == null) throw new Exception("Not Found");
-            if (order.UserEmail != _currentUserService.Email) throw new Exception("Forbidden");
 
             return _mapper.Map<OrderDto>(order);
         }

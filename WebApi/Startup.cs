@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UseCases.Order;
+using UseCases.Order.CheckOrder;
 using UseCases.Order.UpdateOrder;
 using WebApi.Order;
 
@@ -36,6 +37,10 @@ namespace WebApi
 
             services.AddScoped<IRequestHandler<GetOrderRequest, OrderDto>, GetOrderRequestHandler>();
             services.AddScoped<IRequestHandler<UpdateOrderRequest, Unit>, UpdateOrderRequestHandler>();
+
+            services.AddScoped(typeof(CheckOrderRequestDecorator<,>));
+            services.Decorate<IRequestHandler<GetOrderRequest, OrderDto>, CheckOrderRequestDecorator<GetOrderRequest, OrderDto>>();
+            services.Decorate<IRequestHandler<UpdateOrderRequest, Unit>, CheckOrderRequestDecorator<UpdateOrderRequest, Unit>>();
 
             services.AddScoped<IHandlerDispatcher, HandlerDispatcher>();
         }

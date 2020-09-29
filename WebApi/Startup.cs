@@ -34,10 +34,10 @@ namespace WebApi
 
             services.AddAutoMapper(typeof(OrderMappingProfile));
 
-            services.AddScoped<IRequestHandler<int, OrderDto>, GetOrderRequestHandler>();
-            services.AddScoped<IRequestHandler<UpdateOrderRequest>, UpdateOrderRequestHandler>();
+            services.AddScoped<IRequestHandler<GetOrderRequest, OrderDto>, GetOrderRequestHandler>();
+            services.AddScoped<IRequestHandler<UpdateOrderRequest, Unit>, UpdateOrderRequestHandler>();
 
-            services.AddScoped<IHandlerFactory, HandlerFactory>();
+            services.AddScoped<IHandlerDispatcher, HandlerDispatcher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

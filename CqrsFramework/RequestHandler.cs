@@ -3,6 +3,7 @@
 namespace CqrsFramework
 {
     public abstract class RequestHandler<TRequest> : IRequestHandler<TRequest>
+        where TRequest : IRequest
     {
         async Task<Unit> IRequestHandler<TRequest, Unit>.HandleAsync(TRequest request)
         {

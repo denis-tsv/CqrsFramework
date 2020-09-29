@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using AutoMapper;
-using Infrastructure.Interfaces;
+using CqrsFramework;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
+using UseCases.Order.UpdateOrder;
 using WebApi.Order;
 
 namespace WebApi.Controllers
@@ -11,36 +12,23 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
-        private readonly IMapper _mapper;
+        private readonly IServiceProvider _serviceProvider;
 
-        public OrderController(IDbContext dbContext, ICurrentUserService currentUserService, IMapper mapper)
+        public OrderController(IServiceProvider serviceProvider)
         {
-            _dbContext = dbContext;
-            _currentUserService = currentUserService;
-            _mapper = mapper;
+            _serviceProvider = serviceProvider;
         }
 
         [HttpGet("{id}")]
-        public async Task<OrderDto> Get(int id)
+        public Task<OrderDto> Get(int id)
         {
-            var order = await _dbContext.Orders.FindAsync(id);
-            if (order == null) throw new Exception("Not Found");
-            if (order.UserEmail != _currentUserService.Email) throw new Exception("Forbidden");
-
-            return _mapper.Map<OrderDto>(order);
+            return _serviceProvider.GetRequiredService<IRequestHandler<int, OrderDto>>().HandleAsync(id);
         }
 
         [HttpPost("{id}")]
-        public async Task Update(int id, [FromBody]OrderDto dto)
+        public Task Update(int id, [FromBody]OrderDto dto)
         {
-            var order = await _dbContext.Orders.FindAsync(id);
-            if (order == null) throw new Exception("Not found");
-            if (order.UserEmail != _currentUserService.Email) throw new Exception("Forbidden");
-
-            _mapper.Map(dto, order);
-            await _dbContext.SaveChangesAsync();
+            return _serviceProvider.GetRequiredService<IRequestHandler<UpdateOrderRequest>>().HandleAsync(new UpdateOrderRequest {Id = id, Dto = dto});
         }
     }
 }

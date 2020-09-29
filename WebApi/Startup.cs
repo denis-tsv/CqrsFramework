@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Reflection;
 using AutoMapper;
 using CqrsFramework;
 using DataAccess.MsSql;
@@ -12,6 +14,7 @@ using UseCases.Order;
 using UseCases.Order.CheckOrder;
 using UseCases.Order.UpdateOrder;
 using WebApi.Order;
+using WebApi.Order.CheckOrder;
 
 namespace WebApi
 {
@@ -35,8 +38,13 @@ namespace WebApi
 
             services.AddAutoMapper(typeof(OrderMappingProfile));
 
-            services.AddScoped<IRequestHandler<GetOrderRequest, OrderDto>, GetOrderRequestHandler>();
-            services.AddScoped<IRequestHandler<UpdateOrderRequest, Unit>, UpdateOrderRequestHandler>();
+            //services.AddScoped<IRequestHandler<GetOrderRequest, OrderDto>, GetOrderRequestHandler>();
+            //services.AddScoped<IRequestHandler<UpdateOrderRequest, Unit>, UpdateOrderRequestHandler>();
+            services.Scan(selector => selector.FromAssemblyOf<GetOrderRequest>()
+                .AddClasses(classes => classes.AssignableTo(typeof(IRequestHandler<,>)))
+                .AsImplementedInterfaces()
+                .WithScopedLifetime()
+            );
 
             services.AddScoped(typeof(CheckOrderRequestDecorator<,>));
             services.Decorate<IRequestHandler<GetOrderRequest, OrderDto>, CheckOrderRequestDecorator<GetOrderRequest, OrderDto>>();

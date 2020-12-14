@@ -4,11 +4,10 @@ using System.Text;
 using CqrsFramework;
 using WebApi.Order;
 
-namespace UseCases.Order.UpdateOrder
+namespace UseCases.Order.GetOrder
 {
-    public class UpdateOrderCommand : IRequest
+    public class GetOrderQuery : IRequest<OrderDto>
     {
         public int Id { get; set; }
-        public OrderDto Dto { get; set; }
     }
 }

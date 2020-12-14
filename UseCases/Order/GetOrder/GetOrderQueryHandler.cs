@@ -9,7 +9,7 @@ using WebApi.Order;
 
 namespace UseCases.Order.GetOrder
 {
-    public class GetOrderQueryHandler : IRequestHandler<int, OrderDto>
+    public class GetOrderQueryHandler : IRequestHandler<GetOrderQuery, OrderDto>
     {
         private readonly IDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -22,9 +22,9 @@ namespace UseCases.Order.GetOrder
             _currentUserService = currentUserService;
         }
 
-        public async Task<OrderDto> HandleAsync(int id)
+        public async Task<OrderDto> HandleAsync(GetOrderQuery request)
         {
-            var order = await _dbContext.Orders.FindAsync(id);
+            var order = await _dbContext.Orders.FindAsync(request.Id);
             if (order == null) throw new Exception("Not Found");
             if (order.UserEmail != _currentUserService.Email) throw new Exception("Forbidden");
 

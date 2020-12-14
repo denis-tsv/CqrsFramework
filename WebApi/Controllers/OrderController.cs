@@ -4,6 +4,7 @@ using AutoMapper;
 using CqrsFramework;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using UseCases.Order.GetOrder;
 using UseCases.Order.UpdateOrder;
 using WebApi.Order;
 
@@ -13,23 +14,23 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class OrderController : ControllerBase
     {
-        private readonly IRequestHandler<int, OrderDto> _getOrderQueryHandler;
+        private readonly IHandlerDispatcher _handlerDispatcher;
 
-        public OrderController(IRequestHandler<int, OrderDto> getOrderQueryHandler)
+        public OrderController(IHandlerDispatcher handlerDispatcher)
         {
-            _getOrderQueryHandler = getOrderQueryHandler;
+            _handlerDispatcher = handlerDispatcher;
         }
 
         [HttpGet("{id}")]
         public Task<OrderDto> Get(int id)
         {
-            return _getOrderQueryHandler.HandleAsync(id);
+            return _handlerDispatcher.SendAsync(new GetOrderQuery {Id = id});
         }
 
         [HttpPost("{id}")]
-        public Task Update(int id, [FromBody]OrderDto dto, [FromServices]IRequestHandler<UpdateOrderCommand> updateOrderCommandHandler)
+        public Task Update(int id, [FromBody]OrderDto dto)
         {
-            return updateOrderCommandHandler.HandleAsync(new UpdateOrderCommand {Id = id, Dto = dto});
+            return _handlerDispatcher.SendAsync(new UpdateOrderCommand {Id = id, Dto = dto});
         }
     }
 }

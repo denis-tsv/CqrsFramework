@@ -7,6 +7,5 @@ namespace WebApi.Order
 {
     public class OrderDto
     {
-        public int Id { get; set; }
     }
 }

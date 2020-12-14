@@ -27,7 +27,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost("{id}")]
-        public Task Update(int id, [FromBody]OrderDto dto, [FromServices]IRequestHandler<UpdateOrderCommand, int> updateOrderCommandHandler)
+        public Task Update(int id, [FromBody]OrderDto dto, [FromServices]IRequestHandler<UpdateOrderCommand> updateOrderCommandHandler)
         {
             return updateOrderCommandHandler.HandleAsync(new UpdateOrderCommand {Id = id, Dto = dto});
         }

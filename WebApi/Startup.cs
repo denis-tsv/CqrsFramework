@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using CqrsFramework;
 using DataAccess.MsSql;
 using Infrastructure.Interfaces;
 using Microsoft.AspNetCore.Builder;
@@ -14,6 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using UseCases.Order.GetOrder;
+using UseCases.Order.UpdateOrder;
 using WebApi.Order;
 
 namespace WebApi
@@ -37,6 +40,9 @@ namespace WebApi
                 builder.UseSqlServer(Configuration.GetConnectionString("Database")));
 
             services.AddAutoMapper(typeof(OrderMappingProfile));
+
+            services.AddScoped<IRequestHandler<int, OrderDto>, GetOrderQueryHandler>();
+            services.AddScoped<IRequestHandler<UpdateOrderCommand, int>, UpdateOrderCommandHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
